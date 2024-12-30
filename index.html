@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZA68Fix - Программа для исправления ошибок</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --background-color: #f8fafc;
+            --text-color: #1e293b;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .download-btn {
+            position: relative;
+            overflow: hidden;
+            background: white;
+            color: var(--primary-color);
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
+
+        .download-btn:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--primary-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            z-index: -1;
+        }
+
+        .download-btn:hover:before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .download-btn:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .feature-card h3 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        #download {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 3rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        pre {
+            background: #1e293b;
+            color: #fff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li {
+            padding: 0.5rem 0;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        ul li:before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .code-container {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 4px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .copy-btn.copied {
+            background: #10B981;
+        }
+
+        .copy-btn i {
+            font-size: 1rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1e293b;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            color: #10B981;
+            font-size: 1.2rem;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-list {
+            margin-top: 1rem;
+            padding-left: 0;
+        }
+
+        .feature-list li {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-list li:before {
+            display: none;
+        }
+
+        .requirements {
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .requirements ul li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .requirements ul li i {
+            color: var(--primary-color);
+        }
+
+        .installation {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        h2, h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 i, h3 i {
+            color: var(--primary-color);
+        }
+
+        .screenshots {
+            margin: 4rem 0;
+        }
+
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .screenshot-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            max-width: 800px;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+
+        .screenshot-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .screenshot-img {
+            width: 100%;
+            height: auto;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            object-fit: cover;
+        }
+
+        .screenshot-caption {
+            padding: 1rem;
+            margin: 0;
+            text-align: center;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .screenshot-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .screenshot-card {
+                max-width: 100%;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding: 20px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            width: auto;
+            height: auto;
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            animation: zoom 0.3s ease-in-out;
+            object-fit: contain;
+        }
+
+        .modal-caption {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 25px;
+            top: 15px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        @keyframes zoom {
+            from {transform: scale(0.1); opacity: 0;}
+            to {transform: scale(1); opacity: 1;}
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .screenshot-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                max-width: 95vw;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        .screenshot-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(37, 99, 235, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .screenshot-overlay i {
+            color: white;
+            font-size: 2rem;
+            transform: scale(0.5);
+            transition: var(--transition);
+        }
+
+        .screenshot-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screenshot-card:hover .screenshot-overlay {
+            opacity: 1;
+            background: rgba(37, 99, 235, 0.3);
+            backdrop-filter: blur(2px);
+        }
+
+        .screenshot-card:hover .screenshot-overlay i {
+            transform: scale(1);
+        }
+
+        .feature-list {
+            margin-top: 1.5rem;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-list li i {
+            color: var(--primary-color);
+        }
+
+        .requirements {
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .installation {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .download-btn i {
+            font-size: 1.2rem;
+        }
+
+        h2, h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h2 i, h3 i {
+            color: var(--primary-color);
+        }
+
+        /* Кастомный скроллбар */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Улучшенные эффекты для копирования */
+        .copy-btn {
+            transform-origin: center;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .copy-btn.copied {
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ZA68Fix</h1>
+        <p>Профессиональное решение для исправления ошибок в Linux</p>
+        <a href="#download" class="download-btn">
+            <i class="fas fa-download"></i>
+            Скачать для Linux
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="features">
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                <i class="fas fa-bolt feature-icon"></i>
+                <h3>Быстрое исправление</h3>
+                <p>Мгновенное обнаружение и исправление ошибок клавиатуры ZA68 в Linux</p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> Автоматическая настройка</li>
+                    <li><i class="fas fa-check"></i> Мгновенное применение</li>
+                    <li><i class="fas fa-check"></i> Простая установка</li>
+                </ul>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                <i class="fas fa-laptop-code feature-icon"></i>
+                <h3>Простой интерфейс</h3>
+                <p>Удобное управление через терминал или графический интерфейс</p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> Понятные команды</li>
+                    <li><i class="fas fa-check"></i> Подробные логи</li>
+                </ul>
+            </div>
+        </div>
+
+        <section class="screenshots">
+            <h2 data-aos="fade-right">Скриншоты программы</h2>
+            <div class="screenshot-grid">
+                <div class="screenshot-card" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="screenshot-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                    <img src="https://i.ibb.co/VHV2bnF/image.png" alt="Терминальный интерфейс ZA68Fix" class="screenshot-img">
+                    <p class="screenshot-caption">Терминальный интерфейс</p>
+                </div>
+                <div class="screenshot-card" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="screenshot-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                    <img src="https://i.ibb.co/gwxncFs/image.png" alt="Графический интерфейс ZA68Fix" class="screenshot-img">
+                    <p class="screenshot-caption">Графический интерфейс</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="download" data-aos="fade-up">
+            <h2><i class="fas fa-download"></i> Установка</h2>
+            <div class="requirements">
+                <h3><i class="fas fa-list-check"></i> Системные требования</h3>
+                <ul>
+                    <li><i class="fab fa-linux"></i> Linux (Ubuntu 20.04+, Debian 11+, Fedora 35+)</li>
+                    <li><i class="fas fa-keyboard"></i> Клавиатура ZA68</li>
+                    <li><i class="fas fa-terminal"></i> Права администратора</li>
+                </ul>
+            </div>
+            
+            <div class="installation">
+                <h3><i class="fas fa-terminal"></i> Команда для установки</h3>
+                <div class="code-container">
+                    <pre><code>git clone https://github.com/mansar1337/za68-Keyboard-Linux-Fixer.git && cd za68-Keyboard-Linux-Fixer && chmod +x install.sh && sudo ./install.sh</code></pre>
+                    <button class="copy-btn" onclick="copyCode(this)" title="Копировать команду">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="toast" id="toast">
+        <span class="toast-icon">✓</span>
+        <span class="toast-message">Команда скопирована в буфер обмена</span>
+    </div>
+
+    <div class="modal" id="imageModal">
+        <span class="modal-close">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div class="modal-caption" id="modalCaption"></div>
+    </div>
+
+    <script>
+    function showToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function copyCode(button) {
+        const pre = button.previousElementSibling;
+        const code = pre.querySelector('code');
+        const text = code.textContent;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            const icon = button.querySelector('i');
+            icon.className = 'fas fa-check';
+            button.classList.add('copied');
+            showToast();
+            
+            // Добавляем звуковой эффект
+            const audio = new Audio('data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAADAAAGhgBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr///////////////////////////////////////////8AAAA8TEFNRTMuOTlyBK8AAAAAAAAAABSAJAJAQgAAgAAAAoZ4lzktAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQxAADwAABpAAAACAAADSAAAAETEFNRTMuOTkuNVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=');
+            audio.play();
+            
+            setTimeout(() => {
+                icon.className = 'fas fa-copy';
+                button.classList.remove('copied');
+            }, 2000);
+        }).catch(err => {
+            console.error('Ошибка копирования:', err);
+        });
+    }
+
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const modalCaption = document.getElementById('modalCaption');
+    const closeBtn = document.getElementsByClassName('modal-close')[0];
+
+    document.querySelectorAll('.screenshot-card').forEach(card => {
+        card.onclick = function() {
+            modal.style.display = "flex";
+            modalImg.src = this.querySelector('img').src;
+            modalCaption.innerHTML = this.querySelector('.screenshot-caption').innerHTML;
+            document.body.style.overflow = 'hidden';
+        }
+    });
+
+    closeBtn.onclick = function() {
+        closeModal();
+    }
+
+    modal.onclick = function(event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    function closeModal() {
+        modal.style.display = "none";
+        document.body.style.overflow = 'auto';
+    }
+
+    // Инициализация анимаций
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100,
+        easing: 'ease-in-out'
+    });
+    </script>
+</body>
+</html>
